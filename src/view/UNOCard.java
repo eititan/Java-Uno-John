@@ -3,16 +3,13 @@ package view;
 import java.awt.Color;
 
 import interfaces.UNOConstants;
+import org.json.JSONObject;
 
 public abstract class UNOCard implements UNOConstants {
 	
-	private Color cardColor = null;
-	private String value = null;
-	private int type = 0;
-	
-	public UNOCard(){
-		
-	}
+	private Color cardColor;
+	private String value;
+	private int type;
 	
 	public UNOCard(Color cardColor, int cardType, String cardValue){
 		this.cardColor = cardColor;
@@ -42,5 +39,13 @@ public abstract class UNOCard implements UNOConstants {
 
 	public int getType() {
 		return type;
+	}
+
+	public JSONObject toJSON() {
+	    JSONObject json = new JSONObject();
+	    json.put("type", value);
+	    json.put("color", cardColor);
+
+	    return json;
 	}
 }

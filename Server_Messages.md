@@ -1,5 +1,22 @@
 ### Server Notifications to send to Client:
 
+#### DRAW CARD (**proposed changes are done**)
+
+```json
+{
+    "draw card": 
+        {
+            "card":
+                {
+                    "type": "5",
+                    "color": "Red"
+                }
+        }
+}
+```
+
+#### DREW CARD (_**done**_)
+
 ```json
 {
     "notify":

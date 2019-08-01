@@ -9,9 +9,6 @@ public class WildCard extends UNOCard {
 	private int Function = 0;
 	private Color chosenColor;
 	
-	public WildCard() {
-	}
-	
 	public WildCard(String cardValue){
 		super(BLACK, WILD, cardValue);		
 	}

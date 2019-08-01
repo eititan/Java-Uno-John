@@ -56,10 +56,6 @@ public class MessageHandler extends Handler {
         } catch (IllegalArgumentException e) {
             sendError(e, username);
         }
-
-        CardDeck deck = new CardDeck();
-        UNOCard card = deck.drawCard();
-        System.out.println(card.getType() + " " + card.getValue());
     }
 
     public void notify(String key, Object value, String username) {

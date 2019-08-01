@@ -1,5 +1,9 @@
 package java_uno;
 
+import cardModel.CardDeck;
+import org.json.JSONObject;
+import view.UNOCard;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -59,6 +63,7 @@ public class Game {
     private final List<Player> players = Collections.synchronizedList(new ArrayList<>());
     private AtomicLong timerStart;
     private int currentPlayer;
+    private CardDeck deck = new CardDeck();
 
     public Game() {
         startTimer();
@@ -97,7 +102,39 @@ public class Game {
         MessageHandler handler = MessageHandler.getInstance();
         handler.notifyAll("game started", "Game has started");
 
+        synchronized (game.players) {
+            game.players.forEach(player -> {
+                for (int i = 0; i < 7; i++) {
+                    Game.drawCard(player.getUsername());
+                }
+            });
+        }
+
         handler.notifyAll("turn changed", username);
         handler.notify("your turn", username, username);
+    }
+
+    private static synchronized void drawCard(String username) {
+        if (null == game) {
+            throw new IllegalStateException("No game is currently in progress");
+        }
+
+        Player player = game.players.stream()
+                .filter(p -> Objects.equals(username, p.getUsername()))
+                .findFirst()
+                .orElse(null);
+        if (null == player) {
+            throw new IllegalArgumentException("No player with username " + username + " is playing");
+        }
+
+        UNOCard card = game.deck.drawCard();
+
+        player.drawCard(card);
+        MessageHandler.getInstance().notifyAll("drew card", username);
+
+        JSONObject cardMessage = new JSONObject();
+        cardMessage.put("card", card.toJSON());
+
+        MessageHandler.getInstance().notify("draw card", cardMessage, username);
     }
 }

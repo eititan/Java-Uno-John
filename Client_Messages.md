@@ -1,13 +1,15 @@
 ### Client Actions to send to Server:
 
+#### DRAW CARD (**proposed changes are done**)
+
 ```json
 {
     "type": "application",
     "message":
         {
             "module":"JavaUno",
-            "action":
-                {
+            "action": "draw card",
+/*                {
                     "draw card":
                         {
                             "card":
@@ -16,7 +18,7 @@
                                     "color": "Red"
                                 }
                         }
-                }
+                }*/
         }
 }
 ```
@@ -71,6 +73,7 @@
 ```
 
 #### JOIN (_**done**_)
+
 ```json
 {
     "type": "application",
