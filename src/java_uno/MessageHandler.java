@@ -20,7 +20,6 @@ public class MessageHandler extends Handler {
 
     @Override
     protected void handle(JSONObject message) {
-        System.out.println(message);
         if (null == message.optString("module") || !MODULE.equals(message.getString("module"))) {
             return;
         }
@@ -32,10 +31,26 @@ public class MessageHandler extends Handler {
         }
 
         try {
-            if (Objects.equals("join", message.getString("action"))) {
-                Game.addPlayer(username);
+            if (!Objects.equals("", message.optString("action").trim())) {
+                String action = message.getString("action");
 
-                notifyAll("joined", username);
+                switch (action) {
+                    case "join":
+                        Game.addPlayer(username);
+                        notifyAll("joined", username);
+
+                        break;
+                    case "quit":
+                        Game.removePlayer(username);
+                        break;
+                    default:
+                        // Do nothing on server internal messages
+
+                        break;
+                }
+            }
+            else if (null != message.optJSONObject("action")){
+                System.out.println(message);
             }
         } catch (IllegalArgumentException e) {
             sendError(e, username);

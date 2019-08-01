@@ -56,6 +56,7 @@
 }
 ```
 
+#### COLOR CHANGE
 ```json
 {
     "type": "application",
@@ -70,6 +71,7 @@
 }
 ```
 
+#### JOIN (_**done**_)
 ```json
 {
     "type": "application",

@@ -20,6 +20,25 @@ public class Game {
         game.players.add(new Player(username));
     }
 
+    public static void removePlayer(String username) {
+        if (null == game) {
+            return;
+        }
+
+        Iterator<Player> iter = game.players.iterator();
+        while (iter.hasNext()) {
+            if (Objects.equals(username, iter.next().getUsername())) {
+                iter.remove();
+
+                break;
+            }
+        }
+
+        if (0 == game.players.size()) {
+            game = null;
+        }
+    }
+
     public static List<String> activePlayers() {
         return game.players.stream().map(Player::getUsername).collect(Collectors.toList());
     }
