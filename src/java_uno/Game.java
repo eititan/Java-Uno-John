@@ -16,8 +16,10 @@ public class Game {
             game.timerStart = new AtomicLong(System.currentTimeMillis());
         }
 
-        if (game.players.stream().anyMatch(p -> Objects.equals(username, p.getUsername()))) {
-            throw new IllegalArgumentException("Player " + username + " is already in the game");
+        synchronized (game.players) {
+            if (game.players.stream().anyMatch(p -> Objects.equals(username, p.getUsername()))) {
+                throw new IllegalArgumentException("Player " + username + " is already in the game");
+            }
         }
 
         game.players.add(new Player(username));
@@ -28,12 +30,14 @@ public class Game {
             return;
         }
 
-        Iterator<Player> iter = game.players.iterator();
-        while (iter.hasNext()) {
-            if (Objects.equals(username, iter.next().getUsername())) {
-                iter.remove();
+        synchronized (game.players) {
+            Iterator<Player> iter = game.players.iterator();
+            while (iter.hasNext()) {
+                if (Objects.equals(username, iter.next().getUsername())) {
+                    iter.remove();
 
-                break;
+                    break;
+                }
             }
         }
 
@@ -43,11 +47,18 @@ public class Game {
     }
 
     public static List<String> activePlayers() {
-        return game.players.stream().map(Player::getUsername).collect(Collectors.toList());
+        if (null == game) {
+            return new ArrayList<>();
+        }
+
+        synchronized (game.players) {
+            return game.players.stream().map(Player::getUsername).collect(Collectors.toList());
+        }
     }
 
     private final List<Player> players = Collections.synchronizedList(new ArrayList<>());
     private AtomicLong timerStart;
+    private int currentPlayer;
 
     public Game() {
         startTimer();
@@ -75,6 +86,18 @@ public class Game {
     }
 
     private void startGame() {
-        MessageHandler.getInstance().notifyAll("game started", "Game has started");
+        if (0 == players.size()) {
+            game = null;
+            return;
+        }
+
+        currentPlayer = 0;
+        String username = game.players.get(currentPlayer).getUsername();
+
+        MessageHandler handler = MessageHandler.getInstance();
+        handler.notifyAll("game started", "Game has started");
+
+        handler.notifyAll("turn changed", username);
+        handler.notify("your turn", username, username);
     }
 }

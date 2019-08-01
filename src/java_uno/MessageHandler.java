@@ -62,11 +62,15 @@ public class MessageHandler extends Handler {
         System.out.println(card.getType() + " " + card.getValue());
     }
 
-    protected void notifyAll(String key, Object value) {
+    public void notify(String key, Object value, String username) {
         JSONObject message = new JSONObject();
         message.put(key, value);
 
-        Game.activePlayers().forEach(username -> sendToPlayer(message, username));
+        sendToPlayer(message, username);
+    }
+
+    protected void notifyAll(String key, Object value) {
+        Game.activePlayers().forEach(username -> notify(key, value, username));
     }
 
     private void sendError(Exception e, String username) {

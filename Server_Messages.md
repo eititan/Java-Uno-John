@@ -99,6 +99,8 @@
 }
 ```
 
+#### TURN CHANGED (_**done**_)
+
 ```json
 {
     "notify":
@@ -125,6 +127,8 @@
         }
 }
 ```
+
+#### YOUR TURN (_**done**_)
 
 ```json
 {
