@@ -10,12 +10,13 @@ import java.util.Objects;
 
 public class MessageHandler extends Handler {
     private static final String MODULE = "JavaUno";
+    private static final MessageHandler handler = new MessageHandler();
+    public static MessageHandler getInstance() {
+        return handler;
+    }
 
     private MessageHandler() {
-        this(null);
-    }
-    private MessageHandler(String port) {
-        super(port);
+        super(null);
     }
 
     @Override
@@ -61,7 +62,7 @@ public class MessageHandler extends Handler {
         System.out.println(card.getType() + " " + card.getValue());
     }
 
-    private void notifyAll(String key, Object value) {
+    protected void notifyAll(String key, Object value) {
         JSONObject message = new JSONObject();
         message.put(key, value);
 
@@ -81,6 +82,6 @@ public class MessageHandler extends Handler {
     }
 
     public static void main(String[] args) {
-        new Thread(new MessageHandler()).start();
+        new Thread(MessageHandler.getInstance()).start();
     }
 }
