@@ -41,6 +41,8 @@
 }
 ```
 
+#### STARTED (_**done**_)
+
 ```json
 {
     "notify":
@@ -58,6 +60,8 @@
         }
 }
 ```
+
+#### JOINED (_**done**_)
 
 ```json
 {

@@ -56,7 +56,6 @@
 }
 ```
 
-#### COLOR CHANGE
 ```json
 {
     "type": "application",

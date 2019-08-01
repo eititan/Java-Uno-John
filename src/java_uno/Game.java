@@ -75,6 +75,6 @@ public class Game {
     }
 
     private void startGame() {
-        MessageHandler.getInstance().notifyAll("game will started", "Game will start");
+        MessageHandler.getInstance().notifyAll("game started", "Game has started");
     }
 }

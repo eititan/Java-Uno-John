@@ -38,7 +38,7 @@ public class MessageHandler extends Handler {
                 switch (action) {
                     case "join":
                         Game.addPlayer(username);
-                        notifyAll("joined", username);
+                        notifyAll("client joined", username);
 
                         break;
                     case "quit":
