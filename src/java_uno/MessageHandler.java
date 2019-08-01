@@ -6,18 +6,14 @@ import cardModel.CardDeck;
 
 import org.json.JSONObject;
 
+import java.util.Objects;
+
 public class MessageHandler extends Handler {
     private static final String MODULE = "JavaUno";
-    private static MessageHandler handler;
 
-    public static MessageHandler getInstance() {
-        if (null == handler) {
-            handler = new MessageHandler(null);
-        }
-
-        return handler;
+    private MessageHandler() {
+        this(null);
     }
-
     private MessageHandler(String port) {
         super(port);
     }
@@ -32,11 +28,17 @@ public class MessageHandler extends Handler {
         String username = message.getString("username");
 
         if (!message.has("action")) {
-            JSONObject error = new JSONObject();
-            error.put("type", "error");
-            error.put("message", "JavaUno messages must have an 'action'");
+            sendError(new Exception("JavaUno messages must have an 'action'"), username);
+        }
 
-            sendToPlayer(error, username);
+        try {
+            if (Objects.equals("join", message.getString("action"))) {
+                Game.addPlayer(username);
+
+                notifyAll("joined", username);
+            }
+        } catch (IllegalArgumentException e) {
+            sendError(e, username);
         }
 
         CardDeck deck = new CardDeck();
@@ -44,11 +46,26 @@ public class MessageHandler extends Handler {
         System.out.println(card.getType() + " " + card.getValue());
     }
 
-    public void sendToPlayer(JSONObject message, String username) {
+    private void notifyAll(String key, Object value) {
+        JSONObject message = new JSONObject();
+        message.put(key, value);
+
+        Game.activePlayers().forEach(username -> sendToPlayer(message, username));
+    }
+
+    private void sendError(Exception e, String username) {
+        JSONObject error = new JSONObject();
+        error.put("type", "error");
+        error.put("message", e.getMessage());
+
+        sendToPlayer(error, username);
+    }
+
+    private void sendToPlayer(JSONObject message, String username) {
         netSend(message, username, MODULE);
     }
 
     public static void main(String[] args) {
-        new Thread(MessageHandler.getInstance()).start();
+        new Thread(new MessageHandler()).start();
     }
 }
