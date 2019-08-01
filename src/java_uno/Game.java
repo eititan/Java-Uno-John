@@ -20,7 +20,7 @@ public class Game {
             game = new Game();
         }
         else {
-            game.timerStart = new AtomicLong(System.currentTimeMillis());
+            game.startTimer();
         }
 
         synchronized (game.players) {
@@ -64,7 +64,7 @@ public class Game {
     }
 
     private final List<Player> players = Collections.synchronizedList(new ArrayList<>());
-    private AtomicLong timerStart;
+    private Thread timerThread;
     private int currentPlayer;
     private CardDeck deck = new CardDeck();
     private Deque<UNOCard> discard = new ConcurrentLinkedDeque<>();
@@ -97,6 +97,36 @@ public class Game {
         game.updateTurn();
     }
 
+    public static void callUno(String username) {
+        if (null == game) {
+            throw new IllegalStateException("No game started to call UNO");
+        }
+
+        MessageHandler handler = MessageHandler.getInstance();
+
+        if (game.players.stream().anyMatch(p -> Objects.equals(username, p.getUsername()) && 1 == p.handSize())) {
+            handler.notifyAll("called uno", username);
+        }
+    }
+
+    public static void callUnoOn(String unoUsername, String username) {
+        if (null == game) {
+            throw new IllegalStateException("No game started to call UNO");
+        }
+
+        MessageHandler handler = MessageHandler.getInstance();
+
+        if (game.players.stream().anyMatch(p -> Objects.equals(unoUsername, p.getUsername()) && 1 == p.handSize())) {
+            handler.notifyAll("called uno", username);
+
+            drawCard(unoUsername);
+            drawCard(unoUsername);
+        }
+        else {
+            throw new IllegalArgumentException(unoUsername + " doesn't have UNO");
+        }
+    }
+
     private synchronized void updateTurn() {
         if (currentPlayer < players.size() - 1) {
             currentPlayer++;
@@ -113,24 +143,24 @@ public class Game {
     }
 
     private void startTimer() {
-        //noinspection Convert2Lambda
-        new Thread(new Runnable() {
+        if (null != timerThread) {
+            timerThread.interrupt();
+        }
+
+        timerThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                timerStart = new AtomicLong(System.currentTimeMillis());
+                try {
+                    Thread.sleep(WAIT_LENGTH);
 
-                long currentTimerStart = timerStart.longValue();
-                while (System.currentTimeMillis() < timerStart.longValue() + WAIT_LENGTH) {
-                    if (currentTimerStart != timerStart.longValue()) {
-                        return;
-                    }
-
-                    Thread.onSpinWait();
+                    startGame();
+                } catch (InterruptedException e) {
+                    // Just stop this timer
                 }
-
-                startGame();
             }
-        }).start();
+        });
+
+        timerThread.start();
     }
 
     private void startGame() {

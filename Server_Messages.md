@@ -25,6 +25,7 @@
         }
 }
 ```
+#### PLAYED CARD (_**done**_)
 
 ```json
 {
@@ -39,6 +40,8 @@
         }
 }
 ```
+
+#### CALLED UNO (_**done**_)
 
 ```json
 {

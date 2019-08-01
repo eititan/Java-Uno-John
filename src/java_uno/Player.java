@@ -48,4 +48,8 @@ public class Player {
 
         return toPlay;
     }
+
+    public int handSize() {
+        return hand.size();
+    }
 }
