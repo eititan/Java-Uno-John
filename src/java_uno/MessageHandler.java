@@ -32,7 +32,15 @@ public class MessageHandler extends Handler {
         }
 
         try {
-            if (!Objects.equals("", message.optString("action").trim())) {
+            if (null != message.optJSONObject("action")){
+                JSONObject action = message.optJSONObject("action");
+
+                if (action.has("play card")) {
+                    UNOCard card = UNOCard.convertJson(action.getJSONObject("play card").getJSONObject("card"));
+                    Game.playCard(card, username);
+                }
+            }
+            else if (!Objects.equals("", message.optString("action").trim())) {
                 String action = message.getString("action");
 
                 switch (action) {
@@ -49,9 +57,6 @@ public class MessageHandler extends Handler {
 
                         break;
                 }
-            }
-            else if (null != message.optJSONObject("action")){
-                System.out.println(message);
             }
         } catch (IllegalArgumentException e) {
             sendError(e, username);

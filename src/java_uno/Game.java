@@ -4,7 +4,10 @@ import cardModel.CardDeck;
 import org.json.JSONObject;
 import view.UNOCard;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -64,9 +67,49 @@ public class Game {
     private AtomicLong timerStart;
     private int currentPlayer;
     private CardDeck deck = new CardDeck();
+    private Deque<UNOCard> discard = new ConcurrentLinkedDeque<>();
 
     public Game() {
         startTimer();
+    }
+
+    public static void playCard(UNOCard card, String username) {
+        if (null == game) {
+            throw new IllegalStateException("No game started to play card");
+        }
+
+        if (game.currentPlayer >= game.players.size() || !Objects.equals(username, game.players.get(game.currentPlayer).getUsername())) {
+            throw new IllegalArgumentException("It isn't currently player " + username + "'s turn");
+        }
+
+        Player player = game.players.get(game.currentPlayer);
+        if (!player.hasCard(card)) {
+            throw new IllegalArgumentException("No card " + card.toJSON() + " in " + username + "'s hand");
+        }
+
+        game.discard.add(player.playCard(card));
+
+        MessageHandler handler = MessageHandler.getInstance();
+        JSONObject cardMessage = card.toJSON();
+        cardMessage.put("username", username);
+
+        handler.notifyAll("played card", cardMessage);
+        game.updateTurn();
+    }
+
+    private synchronized void updateTurn() {
+        if (currentPlayer < players.size() - 1) {
+            currentPlayer++;
+        }
+        else {
+            currentPlayer = 0;
+        }
+
+        String username = players.get(currentPlayer).getUsername();
+
+        MessageHandler handler = MessageHandler.getInstance();
+        handler.notifyAll("turn changed", username);
+        handler.notify("your turn", username, username);
     }
 
     private void startTimer() {
