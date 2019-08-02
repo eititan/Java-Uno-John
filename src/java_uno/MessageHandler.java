@@ -75,8 +75,11 @@ public class MessageHandler extends Handler {
 
     public void notify(String key, Object value, String username) {
         JSONObject message = new JSONObject();
-        message.put(key, value);
 
+        JSONObject notification = new JSONObject();
+        notification.put(key, value);
+
+        message.put("notify", notification);
         sendToPlayer(message, username);
     }
 
