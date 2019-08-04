@@ -149,6 +149,7 @@ public class Game {
 
         MessageHandler handler = MessageHandler.getInstance();
         handler.notifyAll("turn changed", username);
+        handler.notifyAll("top card", discard.peekLast().toJSON());
         handler.notify("your turn", username, username);
     }
 
@@ -193,6 +194,8 @@ public class Game {
             });
         }
 
+        discard.add(deck.drawCard());
+        handler.notifyAll("top card", discard.peekLast().toJSON());
         handler.notifyAll("turn changed", username);
         handler.notify("your turn", username, username);
     }
@@ -208,6 +211,16 @@ public class Game {
                 .orElse(null);
         if (null == player) {
             throw new IllegalArgumentException("No player with username " + username + " is playing");
+        }
+
+        if (game.deck.isEmpty()) {
+            UNOCard topCard = game.discard.removeLast();
+
+            game.deck.shuffleIn(game.discard);
+            game.discard.clear();
+            game.discard.add(topCard);
+
+            MessageHandler.getInstance().notifyAll("reshuffle", "Dealer reshuffling");
         }
 
         UNOCard card = game.deck.drawCard();
