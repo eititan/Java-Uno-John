@@ -128,6 +128,16 @@ public class Game {
     }
 
     private synchronized void updateTurn() {
+        if (game.players.stream().anyMatch(p -> 0 == p.handSize())) {
+            MessageHandler handler = MessageHandler.getInstance();
+
+            handler.notifyAll("winner", game.players.stream().filter(p -> 0 == p.handSize()).findFirst().get().getUsername());
+            handler.notifyAll("game ended", "Game has ended");
+
+            game = null;
+            return;
+        }
+
         if (currentPlayer < players.size() - 1) {
             currentPlayer++;
         }
@@ -187,7 +197,7 @@ public class Game {
         handler.notify("your turn", username, username);
     }
 
-    private static synchronized void drawCard(String username) {
+    public static synchronized void drawCard(String username) {
         if (null == game) {
             throw new IllegalStateException("No game is currently in progress");
         }

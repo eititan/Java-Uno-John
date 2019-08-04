@@ -8,17 +8,7 @@
     "message":
         {
             "module":"JavaUno",
-            "action": "draw card",
-/*                {
-                    "draw card":
-                        {
-                            "card":
-                                {
-                                    "type":  "5",
-                                    "color": "Red"
-                                }
-                        }
-                }*/
+            "action": "draw card"
         }
 }
 ```

@@ -42,7 +42,7 @@ public abstract class UNOCard implements UNOConstants {
 			default:
 				throw new IllegalArgumentException("Invalid color " + jsonObject.optString("color"));
 		}
-		String value = jsonObject.getString("type");
+		String value = jsonObject.optString("type");
 
 		try {
 			Integer.parseInt(value);

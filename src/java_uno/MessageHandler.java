@@ -32,7 +32,7 @@ public class MessageHandler extends Handler {
         }
 
         try {
-            if (null != message.optJSONObject("action")){
+            if (null != message.optJSONObject("action")) {
                 JSONObject action = message.optJSONObject("action");
 
                 if (action.has("play card")) {
@@ -57,6 +57,10 @@ public class MessageHandler extends Handler {
                     case "join":
                         Game.addPlayer(username);
                         notifyAll("client joined", username);
+
+                        break;
+                    case "draw card":
+                        Game.drawCard(username);
 
                         break;
                     case "quit":
