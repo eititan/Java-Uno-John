@@ -1,5 +1,6 @@
 package java_uno;
 
+import cardModel.ActionCard;
 import cardModel.CardDeck;
 import interfaces.UNOConstants;
 import org.json.JSONObject;
@@ -15,7 +16,6 @@ import java.util.stream.Collectors;
 public class Game {
     private static final long WAIT_LENGTH = 4000;
     private static Game game;
-    private Color currentColor;
 
     public static void addPlayer(String username) {
         if (null == game) {
@@ -70,6 +70,8 @@ public class Game {
     private int currentPlayer;
     private CardDeck deck = new CardDeck();
     private Deque<UNOCard> discard = new ConcurrentLinkedDeque<>();
+    private Color currentColor;
+    private int skips;
 
     public Game() {
         startTimer();
@@ -98,6 +100,31 @@ public class Game {
         }
 
         game.discard.add(player.playCard(card));
+
+        if (card instanceof ActionCard) {
+            if (Objects.equals(UNOConstants.DRAW2PLUS, card.getValue())) {
+                System.out.println("Draw Two");
+
+            }
+            else if (Objects.equals(UNOConstants.REVERSE, card.getValue())) {
+                synchronized (game.players) {
+                    List<Player> temp = new ArrayList<>(game.players);
+
+                    Collections.reverse(temp);
+                    game.players.clear();
+
+                    game.players.addAll(temp);
+                    game.currentPlayer = game.players.size() - (game.currentPlayer + 1);
+                }
+            }
+            else if (Objects.equals(UNOConstants.SKIP, card.getValue())) {
+                game.skips++;
+
+                String nextUsername = game.players.get(game.currentPlayer > game.players.size() - 2 ? 0 : game.currentPlayer + 1).getUsername();
+                MessageHandler.getInstance().notifyAll("player skipped", nextUsername);
+            }
+        }
+
         game.currentColor = game.discard.peekLast().getColor();
 
         MessageHandler handler = MessageHandler.getInstance();
@@ -194,12 +221,15 @@ public class Game {
             return;
         }
 
-        if (currentPlayer < players.size() - 1) {
-            currentPlayer++;
+        while (game.skips >= 0) {
+            if (currentPlayer < players.size() - 1) {
+                currentPlayer++;
+            } else {
+                currentPlayer = 0;
+            }
+            game.skips--;
         }
-        else {
-            currentPlayer = 0;
-        }
+        game.skips = 0;
 
         String username = players.get(currentPlayer).getUsername();
 

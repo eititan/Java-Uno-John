@@ -67,16 +67,8 @@ public abstract class UNOCard implements UNOConstants {
 		return cardColor;
 	}
 
-	public void setValue(String newValue) {
-		this.value = newValue;
-	}
-
 	public String getValue() {
 		return value;
-	}
-
-	public void setType(int newType) {
-		this.type = newType;
 	}
 
 	public int getType() {
