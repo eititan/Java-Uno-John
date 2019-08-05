@@ -49,6 +49,9 @@ public class MessageHandler extends Handler {
                         Game.callUnoOn(unoUsername, username);
                     }
                 }
+                else if (action.has("color change")) {
+                    Game.changeColor(action.optString("color change"), username);
+                }
             }
             else if (!Objects.equals("", message.optString("action").trim())) {
                 String action = message.getString("action");

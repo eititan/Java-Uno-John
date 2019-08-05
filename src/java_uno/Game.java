@@ -1,6 +1,7 @@
 package java_uno;
 
 import cardModel.CardDeck;
+import interfaces.UNOConstants;
 import org.json.JSONObject;
 import view.UNOCard;
 
@@ -87,7 +88,7 @@ public class Game {
 
         if (!Objects.equals(card.getValue(), "W") && !Objects.equals(card.getValue(), "4+")) {
             if (!Objects.equals(card.getValue(), topCard.getValue()) && !Objects.equals(card.getColor(), game.currentColor)) {
-                throw new IllegalArgumentException("Invalid card played, top card is " + topCard.toJSON());
+                throw new IllegalArgumentException("Invalid card played, top value is " + topCard.getValue() + " and color is " + game.currentColor);
             }
         }
 
@@ -99,19 +100,19 @@ public class Game {
         game.discard.add(player.playCard(card));
         game.currentColor = game.discard.peekLast().getColor();
 
-        if (Color.black.equals(game.currentColor)) {
-            return;
-        }
-
         MessageHandler handler = MessageHandler.getInstance();
-        if (!Objects.equals(card.getColor(), topCard.getColor())) {
-            handler.notifyAll("color changed", card.getColor());
-        }
         JSONObject cardMessage = card.toJSON();
         cardMessage.put("username", username);
 
         handler.notifyAll("played card", cardMessage);
-        game.updateTurn();
+
+        if (!Objects.equals(Color.black, game.currentColor)) {
+            if (!Objects.equals(card.getColor(), topCard.getColor())) {
+                handler.notifyAll("color changed", card.getColor());
+            }
+
+            game.updateTurn();
+        }
     }
 
     public static void callUno(String username) {
@@ -142,6 +143,44 @@ public class Game {
         else {
             throw new IllegalArgumentException(unoUsername + " doesn't have UNO");
         }
+    }
+
+    public static void changeColor(String color, String username) {
+        if (null == game) {
+            throw new IllegalStateException("No game started to change the color");
+        }
+        String currentUser = game.players.size() > game.currentPlayer ?
+                game.players.get(game.currentPlayer).getUsername() : null;
+
+        if (!Objects.equals(currentUser, username)) {
+            throw new IllegalArgumentException("User " + username + " is not the current player (" + currentUser + ")");
+        }
+        if (!Objects.equals(Color.BLACK, game.discard.peekLast().getColor())) {
+            throw new IllegalArgumentException("Can't select a color from a non-wild card");
+        }
+
+        Color newColor;
+        switch (color) {
+            case "Blue":
+                newColor = UNOConstants.BLUE;
+                break;
+            case "Green":
+                newColor = UNOConstants.GREEN;
+                break;
+            case "Red":
+                newColor = UNOConstants.RED;
+                break;
+            case "Yellow":
+                newColor = UNOConstants.YELLOW;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid color " + color);
+        }
+
+        game.currentColor = newColor;
+
+        MessageHandler.getInstance().notifyAll("color changed", game.currentColor.toString());
+        game.updateTurn();
     }
 
     private synchronized void updateTurn() {
