@@ -2,6 +2,7 @@ package java_uno;
 
 import cardModel.ActionCard;
 import cardModel.CardDeck;
+import cardModel.WildCard;
 import interfaces.UNOConstants;
 import org.json.JSONObject;
 import view.UNOCard;
@@ -72,6 +73,7 @@ public class Game {
     private Deque<UNOCard> discard = new ConcurrentLinkedDeque<>();
     private Color currentColor;
     private int skips;
+    private String direction = "clockwise";
 
     public Game() {
         startTimer();
@@ -103,8 +105,11 @@ public class Game {
 
         if (card instanceof ActionCard) {
             if (Objects.equals(UNOConstants.DRAW2PLUS, card.getValue())) {
-                System.out.println("Draw Two");
+                int current = game.currentPlayer > game.players.size() - 2 ? 0 : game.currentPlayer + 1;
+                Game.drawCard(game.players.get(current).getUsername());
+                Game.drawCard(game.players.get(current).getUsername());
 
+                game.skips++;
             }
             else if (Objects.equals(UNOConstants.REVERSE, card.getValue())) {
                 synchronized (game.players) {
@@ -116,6 +121,9 @@ public class Game {
                     game.players.addAll(temp);
                     game.currentPlayer = game.players.size() - (game.currentPlayer + 1);
                 }
+                game.direction = Objects.equals("clockwise", game.direction) ? "counter-clockwise" : "clockwise";
+
+                MessageHandler.getInstance().notifyAll("reversed", game.direction);
             }
             else if (Objects.equals(UNOConstants.SKIP, card.getValue())) {
                 game.skips++;
@@ -123,6 +131,16 @@ public class Game {
                 String nextUsername = game.players.get(game.currentPlayer > game.players.size() - 2 ? 0 : game.currentPlayer + 1).getUsername();
                 MessageHandler.getInstance().notifyAll("player skipped", nextUsername);
             }
+        }
+        if (card instanceof WildCard && Objects.equals(UNOConstants.W_DRAW4PLUS, card.getValue())) {
+            int current = game.currentPlayer > game.players.size() - 2 ? 0 : game.currentPlayer + 1;
+            String drawUsername = game.players.get(current).getUsername();
+            Game.drawCard(drawUsername);
+            Game.drawCard(drawUsername);
+            Game.drawCard(drawUsername);
+            Game.drawCard(drawUsername);
+
+            game.skips++;
         }
 
         game.currentColor = game.discard.peekLast().getColor();
@@ -138,7 +156,7 @@ public class Game {
                 handler.notifyAll("color changed", card.getColor());
             }
 
-            game.updateTurn();
+            Game.updateTurn();
         }
     }
 
@@ -207,10 +225,10 @@ public class Game {
         game.currentColor = newColor;
 
         MessageHandler.getInstance().notifyAll("color changed", game.currentColor.toString());
-        game.updateTurn();
+        Game.updateTurn();
     }
 
-    private synchronized void updateTurn() {
+    protected static synchronized void updateTurn() {
         if (game.players.stream().anyMatch(p -> 0 == p.handSize())) {
             MessageHandler handler = MessageHandler.getInstance();
 
@@ -222,20 +240,20 @@ public class Game {
         }
 
         while (game.skips >= 0) {
-            if (currentPlayer < players.size() - 1) {
-                currentPlayer++;
+            if (game.currentPlayer < game.players.size() - 1) {
+                game.currentPlayer++;
             } else {
-                currentPlayer = 0;
+                game.currentPlayer = 0;
             }
             game.skips--;
         }
         game.skips = 0;
 
-        String username = players.get(currentPlayer).getUsername();
+        String username = game.players.get(game.currentPlayer).getUsername();
 
         MessageHandler handler = MessageHandler.getInstance();
         handler.notifyAll("turn changed", username);
-        handler.notifyAll("top card", discard.peekLast().toJSON());
+        handler.notifyAll("top card", game.discard.peekLast().toJSON());
         handler.notify("your turn", username, username);
     }
 

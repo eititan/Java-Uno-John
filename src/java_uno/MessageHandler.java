@@ -64,6 +64,7 @@ public class MessageHandler extends Handler {
                         break;
                     case "draw card":
                         Game.drawCard(username);
+                        Game.updateTurn();
 
                         break;
                     case "quit":
