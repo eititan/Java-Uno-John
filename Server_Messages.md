@@ -1,6 +1,6 @@
 ### Server Notifications to send to Client:
 
-#### DRAW CARD (**proposed changes are done**)
+#### DRAW CARD (_**done**_)
 
 ```json
 {

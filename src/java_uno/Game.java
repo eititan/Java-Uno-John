@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class Game {
     private static final long WAIT_LENGTH = 4000;
     private static Game game;
+    private Color currentColor;
 
     public static void addPlayer(String username) {
         if (null == game) {
@@ -82,14 +83,30 @@ public class Game {
             throw new IllegalArgumentException("It isn't currently player " + username + "'s turn");
         }
 
+        UNOCard topCard = game.discard.peekLast();
+
+        if (!Objects.equals(card.getValue(), "W") && !Objects.equals(card.getValue(), "4+")) {
+            if (!Objects.equals(card.getValue(), topCard.getValue()) && !Objects.equals(card.getColor(), game.currentColor)) {
+                throw new IllegalArgumentException("Invalid card played, top card is " + topCard.toJSON());
+            }
+        }
+
         Player player = game.players.get(game.currentPlayer);
         if (!player.hasCard(card)) {
             throw new IllegalArgumentException("No card " + card.toJSON() + " in " + username + "'s hand");
         }
 
         game.discard.add(player.playCard(card));
+        game.currentColor = game.discard.peekLast().getColor();
+
+        if (Color.black.equals(game.currentColor)) {
+            return;
+        }
 
         MessageHandler handler = MessageHandler.getInstance();
+        if (!Objects.equals(card.getColor(), topCard.getColor())) {
+            handler.notifyAll("color changed", card.getColor());
+        }
         JSONObject cardMessage = card.toJSON();
         cardMessage.put("username", username);
 
@@ -195,6 +212,12 @@ public class Game {
         }
 
         discard.add(deck.drawCard());
+        while (Color.black.equals(discard.peekLast().getColor())) {
+            discard.add(deck.drawCard());
+        }
+
+        currentColor = discard.peekLast().getColor();
+
         handler.notifyAll("top card", discard.peekLast().toJSON());
         handler.notifyAll("turn changed", username);
         handler.notify("your turn", username, username);
