@@ -22,7 +22,7 @@ public class Game {
         if (null == game) {
             game = new Game();
         }
-        else {
+        else if (game.players.size() > 0 && 0 == game.players.get(0).handSize()){
             game.startTimer();
         }
 
