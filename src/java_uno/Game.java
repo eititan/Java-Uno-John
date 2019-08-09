@@ -255,6 +255,12 @@ public class Game {
         handler.notifyAll("turn changed", username);
         handler.notifyAll("top card", game.discard.peekLast().toJSON());
         handler.notify("your turn", username, username);
+
+        JSONObject userCounts = new JSONObject();
+
+        game.players.forEach(player -> userCounts.put(player.getUsername(), player.handSize()));
+
+        handler.notifyAll("card count", userCounts);
     }
 
     private void startTimer() {
@@ -292,7 +298,7 @@ public class Game {
 
         synchronized (game.players) {
             game.players.forEach(player -> {
-                for (int i = 0; i < 7; i++) {
+                while (player.handSize() < 7) {
                     Game.drawCard(player.getUsername());
                 }
             });

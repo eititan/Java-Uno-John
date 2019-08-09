@@ -158,3 +158,25 @@
         }
 }
 ```
+
+```json
+{
+    "notify": 
+        {
+            "top card": { "color":  "<color>", "type":  "<value>" }
+        }
+}
+```
+
+```json
+{
+    "notify": 
+        {
+            "card count": 
+                {
+                    "<username>": "<count>",
+                    "<username 2>": "<count 2>"
+                }
+        }
+}
+```

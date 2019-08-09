@@ -35,7 +35,7 @@ public class MessageHandler extends Handler {
             if (null != message.optJSONObject("action")) {
                 JSONObject action = message.optJSONObject("action");
 
-                if (action.has("play card")) {
+                if (action.has("play card") && null != action.optJSONObject("play card")) {
                     UNOCard card = UNOCard.convertJson(action.getJSONObject("play card").getJSONObject("card"));
                     Game.playCard(card, username);
                 }
