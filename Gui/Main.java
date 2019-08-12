@@ -46,7 +46,7 @@ public class Main extends JFrame {
 					username = JOptionPane.showInputDialog(null,"Please input username", "bob");
 					player = new Player(username);
 					client = new ClientSocket("127.0.0.1", 9886, player);
-					Main frame = new Main(player);
+					Main frame = new Main(player, client);
 					frame.setVisible(true);
 					new Thread(client).start();
 					
@@ -74,7 +74,7 @@ public class Main extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Main(Player player) {
+	public Main(Player player, ClientSocket myClient) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(200, 100, 450, 300);
 		pack();
@@ -85,19 +85,10 @@ public class Main extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 
-		PlayerPanel player1Panel = new PlayerPanel(player);
+		PlayerPanel player1Panel = new PlayerPanel(player, myClient);
 		contentPane.add(player1Panel, BorderLayout.SOUTH);
 
-		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-		exec.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				player1Panel.setCards();
-			}
-		}, 0, 150, TimeUnit.MILLISECONDS);
-
-
-		PlayerPanel Player2Panel = new PlayerPanel(new Player());
+		PlayerPanel Player2Panel = new PlayerPanel(new Player(), myClient);
 		contentPane.add(Player2Panel, BorderLayout.NORTH);
 		
 		setUpNotificationPanel();

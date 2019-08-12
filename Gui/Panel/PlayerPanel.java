@@ -6,34 +6,47 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+
+import Client.ClientSocket;
 import Gui.GameObjects.Player;
 import Gui.Interfaces.GameConstants;
+import MessageFactory.MessageSender;
 
 public class PlayerPanel extends JPanel implements GameConstants {
 
 	private Player player;
 	private String name;
-	private Box myLayout;
+	private Box myLayout, controlPanel;
 	private JLayeredPane cardHolder;
-	private Box controlPanel;
-	private JButton draw;
-	private JButton sayUNO;
+	private ClientSocket client;
+	private JButton draw, sayUNO;
 	private JLabel nameLbl;
 	private MyButtonHandler handler;
 
-	public PlayerPanel(Player newPlayer) {
+	public PlayerPanel(Player newPlayer, ClientSocket myClient) {
 		this.player = newPlayer;
+		this.client = myClient;
 
 		myLayout = Box.createHorizontalBox();
 		cardHolder = new JLayeredPane();
 		cardHolder.setPreferredSize(new Dimension(400, 100));
 
-		setCards();
+		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+		exec.scheduleAtFixedRate(new Runnable() {
+			@Override
+			public void run() {
+				setCards();
+			}
+		}, 0, 500, TimeUnit.MILLISECONDS);
+
 		setControlPanel();
 
 		myLayout.add(cardHolder);
@@ -41,12 +54,12 @@ public class PlayerPanel extends JPanel implements GameConstants {
 		myLayout.add(controlPanel);
 		add(myLayout);
 
-//		handler = new MyButtonHandler();
+		handler = new MyButtonHandler();
 //		draw.addActionListener(BUTTONLISTENER);
-//		draw.addActionListener(handler);
+		draw.addActionListener(handler);
 //
 //		sayUNO.addActionListener(BUTTONLISTENER);
-//		sayUNO.addActionListener(handler);
+		sayUNO.addActionListener(handler);
 	}
 
 	public void setCards() {
@@ -108,16 +121,16 @@ public class PlayerPanel extends JPanel implements GameConstants {
 	}
 	
 	class MyButtonHandler implements ActionListener{
-		
+		MessageSender ups = new MessageSender();
 		public void actionPerformed(ActionEvent e) {
 			
 			if(player.isMyTurn()){
 				
 				if(e.getSource()==draw) {
-					//BUTTONLISTENER.drawCard();
+					client.sendAction(ups.drawCardJson());
 				}
 				else if(e.getSource()==sayUNO) {
-					//BUTTONLISTENER.sayUNO();
+					ups.callUnoJson(player.username);
 				}
 			}
 		}
