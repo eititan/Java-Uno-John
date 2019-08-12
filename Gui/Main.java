@@ -88,6 +88,15 @@ public class Main extends JFrame {
 		PlayerPanel player1Panel = new PlayerPanel(player, myClient);
 		contentPane.add(player1Panel, BorderLayout.SOUTH);
 
+		//continuously refreshes cards in users hands
+		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+		exec.scheduleAtFixedRate(new Runnable() {
+			@Override
+			public void run() {
+				player1Panel.setCards();
+			}
+		}, 0, 1000, TimeUnit.MILLISECONDS);
+
 		PlayerPanel Player2Panel = new PlayerPanel(new Player(), myClient);
 		contentPane.add(Player2Panel, BorderLayout.NORTH);
 		

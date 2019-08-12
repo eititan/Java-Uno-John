@@ -37,7 +37,7 @@ public class PlayerPanel extends JPanel implements GameConstants {
 
 		myLayout = Box.createHorizontalBox();
 		cardHolder = new JLayeredPane();
-		cardHolder.setPreferredSize(new Dimension(400, 100));
+		cardHolder.setPreferredSize(new Dimension(600, 200));
 
 		setControlPanel();
 
@@ -49,15 +49,6 @@ public class PlayerPanel extends JPanel implements GameConstants {
 		handler = new MyButtonHandler();
 		draw.addActionListener(handler);
 		sayUNO.addActionListener(handler);
-
-		//continuously refreshes cards in users hands
-		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-		exec.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				setCards();
-			}
-		}, 0, 1000, TimeUnit.MILLISECONDS);
 	}
 
 	public void setCards() {
@@ -70,8 +61,7 @@ public class PlayerPanel extends JPanel implements GameConstants {
 
 		int i = 0;
 		for (UNOCard card : player.getCards()) {
-			card.setBounds(origin.x, origin.y, card.CARDSIZE.width,
-					card.CARDSIZE.height);
+			card.setBounds(origin.x, origin.y, card.CARDSIZE.width, card.CARDSIZE.height);
 			cardHolder.add(card, i++);
 			cardHolder.moveToFront(card);
 			origin.x += offset;

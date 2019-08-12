@@ -10,7 +10,7 @@ public interface CardInterface{
 	Dimension BIG = new Dimension(WIDTH*3,HEIGHT*3);	
 	
 	//Default card size
-	Dimension CARDSIZE = SMALL;
+	Dimension CARDSIZE = MEDIUM;
 
 	//Default offset
 	int OFFSET = 71;
