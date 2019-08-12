@@ -42,13 +42,9 @@ public interface UNOConstants {
 	int ACTION = 2;
 	int WILD = 3;
 
-	//ActionCard Characters
-	Character charREVERSE = (char) 8634;							//Decimal
-	Character charSKIP    = (char) Integer.parseInt("2718",16); 	//Unicode
-	
 	//ActionCard Functions
-	String REVERSE = charREVERSE.toString();
-	String SKIP	= charSKIP.toString();
+	String REVERSE = "reverse";
+	String SKIP	= "skip";
 	String DRAW2PLUS = "2+";
 	
 	//Wild card functions
