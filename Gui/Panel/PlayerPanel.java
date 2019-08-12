@@ -41,12 +41,12 @@ public class PlayerPanel extends JPanel implements GameConstants {
 		myLayout.add(controlPanel);
 		add(myLayout);
 
-		handler = new MyButtonHandler();
-		draw.addActionListener(BUTTONLISTENER);
-		draw.addActionListener(handler);
-
-		sayUNO.addActionListener(BUTTONLISTENER);
-		sayUNO.addActionListener(handler);
+//		handler = new MyButtonHandler();
+//		draw.addActionListener(BUTTONLISTENER);
+//		draw.addActionListener(handler);
+//
+//		sayUNO.addActionListener(BUTTONLISTENER);
+//		sayUNO.addActionListener(handler);
 	}
 
 	public void setCards() {
