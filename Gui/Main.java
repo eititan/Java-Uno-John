@@ -95,10 +95,10 @@ public class Main extends JFrame {
 			public void run() {
 				player1Panel.setCards();
 			}
-		}, 0, 1000, TimeUnit.MILLISECONDS);
+		}, 3000, 750, TimeUnit.MILLISECONDS);
 
-		PlayerPanel Player2Panel = new PlayerPanel(new Player(), myClient);
-		contentPane.add(Player2Panel, BorderLayout.NORTH);
+//		PlayerPanel Player2Panel = new PlayerPanel(new Player(), myClient);
+//		contentPane.add(Player2Panel, BorderLayout.NORTH);
 		
 		setUpNotificationPanel();
 		setupGameBoardPanel();
@@ -141,26 +141,6 @@ public class Main extends JFrame {
 			}
 		});
 		Buttons.add(btnPlaycard);
-		
-//		JButton btnDrawcard = new JButton("DrawCard");
-//		btnDrawcard.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				JSONObject drawCard = client.messageMan.drawCardJson();
-//				System.out.println(drawCard.toString());
-//				client.sendAction(drawCard);
-//			}
-//		});
-//		Buttons.add(btnDrawcard);
-		
-//		JButton btnCalluno = new JButton("CallUno");
-//		btnCalluno.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				JSONObject callUno = client.messageMan.callUnoJson(username);
-//				System.out.println(callUno.toString());
-//				client.sendAction(callUno);
-//			}
-//		});
-//		Buttons.add(btnCalluno);
 		
 		JButton btnColorchange = new JButton("ColorChange");
 		btnColorchange.addActionListener(new ActionListener() {

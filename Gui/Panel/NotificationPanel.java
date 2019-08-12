@@ -4,10 +4,7 @@ import Gui.GameObjects.Player;
 
 import java.awt.Dimension;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 
 import java.awt.BorderLayout;
@@ -24,11 +21,13 @@ public class NotificationPanel extends JPanel {
 		add(NotifyLabel, BorderLayout.NORTH);
 		
 		txtNotification = new JTextArea();
-		JScrollPane ScrollPane = new JScrollPane(txtNotification, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane scrollPane = new JScrollPane(txtNotification, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
+		scrollBar.setValue(scrollBar.getMaximum());
 		txtNotification.setPreferredSize(new Dimension(250,200));
 		txtNotification.setLineWrap(true);
 		
-		add(ScrollPane, BorderLayout.CENTER);
+		add(scrollPane, BorderLayout.CENTER);
 	}
 
 }

@@ -66,6 +66,7 @@ public class PlayerPanel extends JPanel implements GameConstants {
 			cardHolder.moveToFront(card);
 			origin.x += offset;
 		}
+		revalidate();
 		repaint();
 	}
 
