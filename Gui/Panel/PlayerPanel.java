@@ -130,7 +130,7 @@ public class PlayerPanel extends JPanel implements GameConstants {
 					client.sendAction(ups.drawCardJson());
 				}
 				else if(e.getSource()==sayUNO) {
-					ups.callUnoJson(player.username);
+					client.sendAction(ups.callUnoJson(player.username));
 				}
 			}
 		}
