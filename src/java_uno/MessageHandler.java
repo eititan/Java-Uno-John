@@ -25,7 +25,7 @@ public class MessageHandler extends Handler {
             return;
         }
 
-        String username = message.getString("username");
+        String username = message.optString("username");
 
         if (!message.has("action")) {
             sendError(new Exception("JavaUno messages must have an 'action'"), username);
@@ -105,6 +105,10 @@ public class MessageHandler extends Handler {
 
     private void sendToPlayer(JSONObject message, String username) {
         netSend(message, username, MODULE);
+    }
+
+    protected void log(String message) {
+        log("INFO", message, MODULE);
     }
 
     public static void main(String[] args) {

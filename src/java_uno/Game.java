@@ -8,14 +8,13 @@ import org.json.JSONObject;
 import view.UNOCard;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 public class Game {
-    private static final long WAIT_LENGTH = 4000;
+    private static final long WAIT_LENGTH = 1000;
     private static Game game;
 
     public static void addPlayer(String username) {
@@ -306,7 +305,9 @@ public class Game {
 
         discard.add(deck.drawCard());
         while (Color.black.equals(discard.peekLast().getColor())) {
-            discard.add(deck.drawCard());
+            UNOCard card = deck.drawCard();
+            MessageHandler.getInstance().log("Flipping card " + card.toJSON());
+            discard.add(card);
         }
 
         currentColor = discard.peekLast().getColor();
@@ -314,6 +315,8 @@ public class Game {
         handler.notifyAll("top card", discard.peekLast().toJSON());
         handler.notifyAll("turn changed", username);
         handler.notify("your turn", username, username);
+
+        startTimer();
     }
 
     public static synchronized void drawCard(String username) {
