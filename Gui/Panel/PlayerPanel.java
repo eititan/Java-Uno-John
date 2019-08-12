@@ -39,14 +39,6 @@ public class PlayerPanel extends JPanel implements GameConstants {
 		cardHolder = new JLayeredPane();
 		cardHolder.setPreferredSize(new Dimension(400, 100));
 
-		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-		exec.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				setCards();
-			}
-		}, 0, 500, TimeUnit.MILLISECONDS);
-
 		setControlPanel();
 
 		myLayout.add(cardHolder);
@@ -55,11 +47,17 @@ public class PlayerPanel extends JPanel implements GameConstants {
 		add(myLayout);
 
 		handler = new MyButtonHandler();
-//		draw.addActionListener(BUTTONLISTENER);
 		draw.addActionListener(handler);
-//
-//		sayUNO.addActionListener(BUTTONLISTENER);
 		sayUNO.addActionListener(handler);
+
+		//continuously refreshes cards in users hands
+		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+		exec.scheduleAtFixedRate(new Runnable() {
+			@Override
+			public void run() {
+				setCards();
+			}
+		}, 0, 1000, TimeUnit.MILLISECONDS);
 	}
 
 	public void setCards() {

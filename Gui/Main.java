@@ -133,25 +133,25 @@ public class Main extends JFrame {
 		});
 		Buttons.add(btnPlaycard);
 		
-		JButton btnDrawcard = new JButton("DrawCard");
-		btnDrawcard.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				JSONObject drawCard = client.messageMan.drawCardJson();
-				System.out.println(drawCard.toString());
-				client.sendAction(drawCard);				
-			}
-		});
-		Buttons.add(btnDrawcard);
+//		JButton btnDrawcard = new JButton("DrawCard");
+//		btnDrawcard.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				JSONObject drawCard = client.messageMan.drawCardJson();
+//				System.out.println(drawCard.toString());
+//				client.sendAction(drawCard);
+//			}
+//		});
+//		Buttons.add(btnDrawcard);
 		
-		JButton btnCalluno = new JButton("CallUno");
-		btnCalluno.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JSONObject callUno = client.messageMan.callUnoJson(username);
-				System.out.println(callUno.toString());
-				client.sendAction(callUno);
-			}
-		});
-		Buttons.add(btnCalluno);
+//		JButton btnCalluno = new JButton("CallUno");
+//		btnCalluno.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				JSONObject callUno = client.messageMan.callUnoJson(username);
+//				System.out.println(callUno.toString());
+//				client.sendAction(callUno);
+//			}
+//		});
+//		Buttons.add(btnCalluno);
 		
 		JButton btnColorchange = new JButton("ColorChange");
 		btnColorchange.addActionListener(new ActionListener() {
