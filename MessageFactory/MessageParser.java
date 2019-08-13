@@ -23,7 +23,6 @@ public class MessageParser {
         String type = new JSONObject(message).getJSONObject("draw card").getJSONObject("card").getString("type");
         String color = new JSONObject(message).getJSONObject("draw card").getJSONObject("card").getString("color");
 
-
         Color cardColor = determineColor(color);
         UNOCard drewCard = new UNOCard(cardColor, type);
         player.addCard(drewCard);
@@ -105,6 +104,17 @@ public class MessageParser {
 //    	String cardCount = new JSONObject(message).getString("card count");
 //    	player.addNotifications("the opponent card count is: " + cardCount);
     }
+
+    public void topCard(String message) {
+        String type = new JSONObject(message).getJSONObject("top card").getString("type");
+        String color = new JSONObject(message).getJSONObject("top card").getString("color");
+
+        Color cardColor = determineColor(color);
+        UNOCard tableCard = new UNOCard(cardColor, type);
+        player.setTableCard(tableCard);
+        player.addNotifications("Top card on table is " + tableCard.toString());
+    }
+
 
     private Color determineColor(String color){
         switch(color){

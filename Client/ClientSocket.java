@@ -31,7 +31,7 @@ public class ClientSocket implements Runnable {
 			this.player = player;
 			parser = new MessageParser(this.player);
 			
-			JSONObject login = messageMan.loginJson(player.username);
+			JSONObject login = messageMan.loginJson(player.getName());
 			System.out.println(login.toString());
 			sendAction(login);
 
@@ -127,6 +127,8 @@ public class ClientSocket implements Runnable {
 				break;
 			case "card count":
 				parser.cardCount(drilledJSON);
+			case "top card":
+				parser.topCard(drilledJSON);
 			default:
 				System.out.println("Error in switch! Beep boop, unhandled notify key: " + key);
 		}

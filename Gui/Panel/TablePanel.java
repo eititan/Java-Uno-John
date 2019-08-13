@@ -6,27 +6,34 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.JPanel;
+
+import Gui.GameObjects.Player;
 import Gui.Interfaces.GameConstants;
+import Gui.Interfaces.UNOConstants;
 
 public class TablePanel extends JPanel implements GameConstants {
 	
-	private UNOCard topCard;	
+	private UNOCard topCard = new UNOCard(UNOConstants.RED, "6");
 	private JPanel table;
+	private Player player;
 	
 	//public TablePanel(UNOCard firstCard){
-	public TablePanel(){
+	public TablePanel(Player player){
+		this.player = player;
+
 		setOpaque(false);
 		setLayout(new GridBagLayout());
-		//topCard = firstCard;
+
+		//topCard = player.getTableCard();
 		table = new JPanel();
 		table.setBackground(new Color(64,64,64));
-		//setTable();
+		setTable();
 		setComponents();
 	}
 	
 	private void setTable(){
 		
-		table.setPreferredSize(new Dimension(125,75));
+		table.setPreferredSize(new Dimension(300, 150));
 		table.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -65,6 +72,7 @@ public class TablePanel extends JPanel implements GameConstants {
 //		}
 //		else {
 		background = playedCard.getColor();
+		System.out.println(player.getTableCard().toString());
 		table.setBackground(background);
 	}
 }

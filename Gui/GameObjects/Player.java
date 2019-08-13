@@ -6,11 +6,11 @@ import Gui.Panel.UNOCard;
 
 public class Player {
 
-	public String username;
-	public boolean isTurn = false;
-	public boolean iCalledUno = false;
-	public boolean playedCard = false;
-	public boolean drewCard = false;
+	private String username;
+	private boolean isTurn = false;
+	private boolean iCalledUno = false;
+	private boolean playedCard = false;
+	private	UNOCard tableCard;
 	private LinkedList<String> notifications;
 	public LinkedList<UNOCard> cards;
 
@@ -72,6 +72,14 @@ public class Player {
 
 	public void endTurn() {
 		this.isTurn = false;
+	}
+
+	public void setTableCard(UNOCard card){
+		this.tableCard = card;
+	}
+
+	public UNOCard getTableCard(){
+		return tableCard;
 	}
 
 }

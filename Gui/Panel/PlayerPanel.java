@@ -6,9 +6,6 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -119,7 +116,7 @@ public class PlayerPanel extends JPanel implements GameConstants {
 					client.sendAction(ups.drawCardJson());
 				}
 				else if(e.getSource()==sayUNO) {
-					client.sendAction(ups.callUnoJson(player.username));
+					client.sendAction(ups.callUnoJson(player.getName()));
 				}
 			}
 		}

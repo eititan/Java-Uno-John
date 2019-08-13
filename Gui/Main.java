@@ -50,18 +50,6 @@ public class Main extends JFrame {
 					frame.setVisible(true);
 					new Thread(client).start();
 					
-					ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-					exec.scheduleAtFixedRate(new Runnable() {
-						@Override
-						public void run() {
-							NotificationPanel.txtNotification.setText("");
-
-							for (String string : player.getNotifications()) {
-								NotificationPanel.txtNotification.append(string + "\n");
-							}
-						}
-					}, 0, 3, TimeUnit.SECONDS);
-					
 
 				
 				} catch (Exception e) {
@@ -94,8 +82,13 @@ public class Main extends JFrame {
 			@Override
 			public void run() {
 				player1Panel.setCards();
+				NotificationPanel.txtNotification.setText("");
+
+				for (String string : player.getNotifications()) {
+					NotificationPanel.txtNotification.append(string + "\n");
+				}
 			}
-		}, 3000, 750, TimeUnit.MILLISECONDS);
+		}, 4000, 1500, TimeUnit.MILLISECONDS);
 
 //		PlayerPanel Player2Panel = new PlayerPanel(new Player(), myClient);
 //		contentPane.add(Player2Panel, BorderLayout.NORTH);
@@ -111,17 +104,19 @@ public class Main extends JFrame {
 	}
 
 	private void setupGameBoardPanel() {
-		JPanel GameInfoPanel = new JPanel();
-		contentPane.add(GameInfoPanel, BorderLayout.CENTER);
-		TablePanel GamePlayPanel = new TablePanel();
-		GameInfoPanel.setLayout(new BorderLayout(0, 0));
-		GameInfoPanel.add(GamePlayPanel, BorderLayout.CENTER);
-		GamePlayPanel.setLayout(new BorderLayout(0, 0));
+		JPanel gameInfoPanel = new JPanel();
+		gameInfoPanel.setSize(300,150);
+		contentPane.add(gameInfoPanel, BorderLayout.CENTER);
+		TablePanel gamePlayPanel = new TablePanel(player);
+		gameInfoPanel.setSize(300,150);
+		gameInfoPanel.setLayout(new BorderLayout(0, 0));
+		gameInfoPanel.add(gamePlayPanel, BorderLayout.CENTER);
+		gamePlayPanel.setLayout(new BorderLayout(0, 0));
 		
 		JPanel ActionButtons = new JPanel();
-		GamePlayPanel.add(ActionButtons);
+		gamePlayPanel.add(ActionButtons);
 		ActionButtons.setLayout(new BorderLayout(0, 0));
-		
+
 		JPanel Buttons = new JPanel();
 		ActionButtons.add(Buttons, BorderLayout.WEST);
 		Buttons.setLayout(new GridLayout(4, 0, 0, 0));
@@ -152,24 +147,24 @@ public class Main extends JFrame {
 			}
 		});
 		Buttons.add(btnColorchange);
-		
-		TablePanel GameBoardPanel = new TablePanel();
-		ActionButtons.add(GameBoardPanel, BorderLayout.CENTER);
-		
-		JButton btnClickForCards = new JButton("click for cards");
-		btnClickForCards.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				for (int i = 0; i < player.cards.size(); i++) {
-					System.out.println(i + " " + player.cards.get(i));
-				}
-				
-			}
-		});
+
+//		TablePanel GameBoardPanel = new TablePanel(player);
+//		ActionButtons.add(GameBoardPanel, BorderLayout.CENTER);
+
 		GridBagConstraints gbc_btnClickForCards = new GridBagConstraints();
 		gbc_btnClickForCards.insets = new Insets(0, 0, 0, 5);
 		gbc_btnClickForCards.gridx = 0;
 		gbc_btnClickForCards.gridy = 2;
-		GameBoardPanel.add(btnClickForCards, gbc_btnClickForCards);
+
+//		//continuously refreshes cards in users hands
+//		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+//		exec.scheduleAtFixedRate(new Runnable() {
+//			@Override
+//			public void run() {
+//				gamePlayPanel.setPlayedCard(player.getTableCard());
+//
+//			}
+//		}, 4000, 1500, TimeUnit.MILLISECONDS);
 	}
 
 }
