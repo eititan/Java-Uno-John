@@ -127,10 +127,13 @@ public class ClientSocket implements Runnable {
 				break;
 			case "card count":
 				parser.cardCount(drilledJSON);
+				break;
 			case "top card":
 				parser.topCard(drilledJSON);
+				break;
 			default:
 				System.out.println("Error in switch! Beep boop, unhandled notify key: " + key);
+				break;
 		}
 	}
 

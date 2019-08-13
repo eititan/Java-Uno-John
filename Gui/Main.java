@@ -105,20 +105,21 @@ public class Main extends JFrame {
 
 	private void setupGameBoardPanel() {
 		JPanel gameInfoPanel = new JPanel();
-		gameInfoPanel.setSize(300,150);
 		contentPane.add(gameInfoPanel, BorderLayout.CENTER);
+
 		TablePanel gamePlayPanel = new TablePanel(player);
-		gameInfoPanel.setSize(300,150);
+
 		gameInfoPanel.setLayout(new BorderLayout(0, 0));
 		gameInfoPanel.add(gamePlayPanel, BorderLayout.CENTER);
+
 		gamePlayPanel.setLayout(new BorderLayout(0, 0));
-		
-		JPanel ActionButtons = new JPanel();
-		gamePlayPanel.add(ActionButtons);
-		ActionButtons.setLayout(new BorderLayout(0, 0));
+
+		JPanel actionButtons = new JPanel();
+		gameInfoPanel.add(actionButtons);
+		actionButtons.setLayout(new BorderLayout(0, 0));
 
 		JPanel Buttons = new JPanel();
-		ActionButtons.add(Buttons, BorderLayout.WEST);
+		actionButtons.add(Buttons, BorderLayout.WEST);
 		Buttons.setLayout(new GridLayout(4, 0, 0, 0));
 		
 		JButton btnPlaycard = new JButton("PlayCard");
@@ -148,23 +149,23 @@ public class Main extends JFrame {
 		});
 		Buttons.add(btnColorchange);
 
-//		TablePanel GameBoardPanel = new TablePanel(player);
-//		ActionButtons.add(GameBoardPanel, BorderLayout.CENTER);
+		TablePanel gameBoardPanel = new TablePanel(player);
+		actionButtons.add(gameBoardPanel, BorderLayout.CENTER);
 
 		GridBagConstraints gbc_btnClickForCards = new GridBagConstraints();
 		gbc_btnClickForCards.insets = new Insets(0, 0, 0, 5);
 		gbc_btnClickForCards.gridx = 0;
 		gbc_btnClickForCards.gridy = 2;
 
-//		//continuously refreshes cards in users hands
-//		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-//		exec.scheduleAtFixedRate(new Runnable() {
-//			@Override
-//			public void run() {
-//				gamePlayPanel.setPlayedCard(player.getTableCard());
-//
-//			}
-//		}, 4000, 1500, TimeUnit.MILLISECONDS);
+		//continuously refreshes cards in users hands
+		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+		exec.scheduleAtFixedRate(new Runnable() {
+			@Override
+			public void run() {
+				gameBoardPanel.setPlayedCard(player.getTableCard());
+
+			}
+		}, 4000, 1500, TimeUnit.MILLISECONDS);
 	}
 
 }

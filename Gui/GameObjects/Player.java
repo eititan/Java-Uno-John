@@ -75,6 +75,7 @@ public class Player {
 	}
 
 	public void setTableCard(UNOCard card){
+		System.out.println(card.toString());
 		this.tableCard = card;
 	}
 
