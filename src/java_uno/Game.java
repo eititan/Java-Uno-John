@@ -8,22 +8,17 @@ import org.json.JSONObject;
 import view.UNOCard;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 public class Game {
-    private static final long WAIT_LENGTH = 4000;
     private static Game game;
 
-    public static void addPlayer(String username) {
+    public static synchronized void addPlayer(String username) {
         if (null == game) {
             game = new Game();
-        }
-        else if (game.players.size() > 0 && 0 == game.players.get(0).handSize()){
-            game.startTimer();
         }
 
         synchronized (game.players) {
@@ -33,6 +28,10 @@ public class Game {
         }
 
         game.players.add(new Player(username));
+
+        if (2 == game.players.size()) {
+            game.startGame();
+        }
     }
 
     public static void removePlayer(String username) {
@@ -67,17 +66,12 @@ public class Game {
     }
 
     private final List<Player> players = Collections.synchronizedList(new ArrayList<>());
-    private Thread timerThread;
     private int currentPlayer;
     private CardDeck deck = new CardDeck();
     private Deque<UNOCard> discard = new ConcurrentLinkedDeque<>();
     private Color currentColor;
     private int skips;
     private String direction = "clockwise";
-
-    public Game() {
-        startTimer();
-    }
 
     public static void playCard(UNOCard card, String username) {
         if (null == game) {
@@ -263,33 +257,7 @@ public class Game {
         handler.notifyAll("card count", userCounts);
     }
 
-    private void startTimer() {
-        if (null != timerThread) {
-            timerThread.interrupt();
-        }
-
-        timerThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(WAIT_LENGTH);
-
-                    startGame();
-                } catch (InterruptedException e) {
-                    // Just stop this timer
-                }
-            }
-        });
-
-        timerThread.start();
-    }
-
     private void startGame() {
-        if (0 == players.size()) {
-            game = null;
-            return;
-        }
-
         currentPlayer = 0;
         String username = game.players.get(currentPlayer).getUsername();
 
