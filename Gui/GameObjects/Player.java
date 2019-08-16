@@ -1,24 +1,35 @@
 package Gui.GameObjects;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 
+import Gui.Listeners.MyCardListener;
 import Gui.Panel.UNOCard;
 
 public class Player {
 
 	private String username;
 	private boolean isTurn = false;
-	private boolean iCalledUno = false;
-	private boolean playedCard = false;
 	private	UNOCard tableCard;
 	private LinkedList<String> notifications;
 	public LinkedList<UNOCard> cards;
-
-	public Player() {
+	private int opponentCardCount = 7;
+	private boolean drewCard = false;
+	private MyCardListener cardListener;
+	public String recentColorChange;
+	
+	public Player() {		
 		this.notifications = new LinkedList<>();
 		this.cards = new LinkedList<>();
 	}
 
+	public void setCardListener(MyCardListener CardListener) {
+		this.cardListener = CardListener;
+	}
+	
 	public Player(String name) {
 		setName(name);
 		this.notifications = new LinkedList<>();
@@ -34,6 +45,7 @@ public class Player {
 	}
 
 	public void addCard(UNOCard card) {
+		addCardListener(cardListener, card);
 		cards.add(card);
 	}
 
@@ -54,8 +66,9 @@ public class Player {
 		return cards;
 	}
 
-	public void removeCard(UNOCard card) {
-		cards.remove(card);
+	public void removeCard() {
+		UNOCard playedCard = cardListener.getPlayedCard();
+		cards.remove(playedCard);
 	}
 
 	public int getTotalCards(){
@@ -66,7 +79,7 @@ public class Player {
 		return isTurn;
 	}
 
-	public void setIsTurn() {
+	public void startTurn() {
 		this.isTurn = true;
 	}
 
@@ -82,6 +95,25 @@ public class Player {
 	public UNOCard getTableCard(){
 		return tableCard;
 	}
+	
+	public void setOpponentCardCount(int oppCardCount) {
+		this.opponentCardCount = oppCardCount;
+	}
+	
+	public int getOpponentCardCount() {
+		return opponentCardCount;
+	}
 
+	public void setDrewCard() {
+		this.drewCard = true;
+	}
+	
+	public boolean getDrewCard() {
+		return drewCard;
+	}
+	
+	private void addCardListener(MyCardListener listener, UNOCard card){
+		card.addMouseListener(listener);
+	}
 }
 

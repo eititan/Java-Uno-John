@@ -4,12 +4,13 @@ import Gui.GameObjects.Player;
 import Gui.Interfaces.UNOConstants;
 import Gui.Panel.UNOCard;
 import org.json.JSONObject;
-
 import java.awt.*;
+import java.util.Iterator;
 
 public class MessageParser {
     private Player player;
-
+    public String colorChanged;
+    
     public MessageParser(Player player) {
     	this.player = player;
      }
@@ -25,6 +26,7 @@ public class MessageParser {
 
         Color cardColor = determineColor(color);
         UNOCard drewCard = new UNOCard(cardColor, type);
+        
         player.addCard(drewCard);
         player.addNotifications("You drew a " + drewCard.toString());
     }
@@ -35,6 +37,10 @@ public class MessageParser {
         String playedUser = new JSONObject(message).getJSONObject("played card").getString("username");
 
         Color color = determineColor(playedColor);
+        
+        player.endTurn();
+        player.removeCard();
+        
         UNOCard playedCard = new UNOCard(color, playedType);
         
         player.addNotifications(playedUser + " has played " + playedCard.toString());
@@ -56,7 +62,8 @@ public class MessageParser {
     }
 
     public void yourTurn(String message) {
-        String yourTurn = new JSONObject(message).getString("your turn");
+        player.startTurn();
+        System.out.println(player.isMyTurn());
         player.addNotifications("it's your turn");
     }
 
@@ -71,7 +78,8 @@ public class MessageParser {
     }
 
     public void colorChanged(String message) {
-        String colorChanged = new JSONObject(message).getString("color changed");
+        colorChanged = new JSONObject(message).getString("color changed");
+        player.setTableCard( new UNOCard(determineColor(colorChanged), player.getTableCard().getType()));
         player.addNotifications("The color has changed to " + colorChanged);
     }
 
@@ -92,6 +100,11 @@ public class MessageParser {
 
     public void winner(String message) {
         String winner = new JSONObject(message).getString("winner");
+        
+        if(!winner.equals(player.getName())) {
+        	player.setOpponentCardCount(0);
+        }
+        
         player.addNotifications("winner is " + winner);
     }
 
@@ -101,20 +114,46 @@ public class MessageParser {
     }
     
     public void cardCount(String message) {
-//    	String cardCount = new JSONObject(message).getString("card count");
-//    	player.addNotifications("the opponent card count is: " + cardCount);
-    }
+    	JSONObject users = new JSONObject(message).getJSONObject("card count");
+    	
+    	System.out.println(users.toString());
+		Iterator<String> keys = users.keys();
+		String user1 = keys.next();
+		String user2 = "";
+		
+		while(keys.hasNext()) {
+			user2 = keys.next();
+			System.out.println(user2);
+		}
+		
+		if (player.getName().equals(user1)) {
+			int cardCount = users.getInt(user2);
+			player.setOpponentCardCount(cardCount);
+	    	player.addNotifications("the opponent card count is: " + cardCount);			
+		}else{
+			int cardCount = users.getInt(user1);
+			player.setOpponentCardCount(cardCount);
+	    	player.addNotifications("the opponent card count is: " + cardCount);
+		}
 
+    }
+    
     public void topCard(String message) {
         String type = new JSONObject(message).getJSONObject("top card").getString("type");
         String color = new JSONObject(message).getJSONObject("top card").getString("color");
 
         Color cardColor = determineColor(color);
         UNOCard tableCard = new UNOCard(cardColor, type);
+        
+        
         player.setTableCard(tableCard);
+        
+        if (colorChanged != null || player.getTableCard().getColorString().equals("Black")) {
+        	player.setTableCard( new UNOCard(determineColor(colorChanged), player.getTableCard().getType()));
+        }
+        
         player.addNotifications("Top card on table is " + tableCard.toString());
     }
-
 
     private Color determineColor(String color){
         switch(color){

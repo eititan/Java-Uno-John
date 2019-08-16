@@ -1,32 +1,24 @@
 package Gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
 import Gui.GameObjects.Player;
+import Gui.Listeners.MyCardListener;
 import Gui.Panel.NotificationPanel;
+import Gui.Panel.OpponentPanel;
 import Gui.Panel.PlayerPanel;
 import Gui.Panel.TablePanel;
-import Gui.Panel.UNOCard;
-import org.json.JSONObject;
-
 import Client.ClientSocket;
-
-import javax.swing.JButton;
-import java.awt.GridLayout;
-import java.awt.event.ActionListener;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.awt.event.ActionEvent;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
+
 
 public class Main extends JFrame {
 
@@ -34,24 +26,30 @@ public class Main extends JFrame {
 	private static ClientSocket client;
 	private static Player player;
 	private static String username;
+	private static PlayerPanel playerPanel;
+	private JFrame jFrame;
+	private TablePanel gameBoardPanel;
+	private OpponentPanel opponentPlayer;
+	private static MyCardListener cardListener = new MyCardListener();
 	
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					
-					username = JOptionPane.showInputDialog(null,"Please input username", "bob");
+					username = JOptionPane.showInputDialog(null,"Please input username", "John");
 					player = new Player(username);
 					client = new ClientSocket("127.0.0.1", 9886, player);
+
+					cardListener.setClient(client);
+					player.setCardListener(cardListener);
+					
 					Main frame = new Main(player, client);
 					frame.setVisible(true);
+					frame.setTitle("Java Sucks");
 					new Thread(client).start();
 					
-
-				
+					frame.pack();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -59,113 +57,72 @@ public class Main extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public Main(Player player, ClientSocket myClient) {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(200, 100, 450, 300);
-		pack();
-		setSize(1080,600);
-		contentPane = new JPanel();
-		contentPane.setPreferredSize(new Dimension(850, 600));
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
-
-		PlayerPanel player1Panel = new PlayerPanel(player, myClient);
-		contentPane.add(player1Panel, BorderLayout.SOUTH);
-
-		//continuously refreshes cards in users hands
+		setUpContentPane();
+		
+		playerPanel = new PlayerPanel(player, myClient, jFrame);
+		playerPanel.setBackground(new Color(222,184,135));
+		contentPane.add(playerPanel, BorderLayout.SOUTH);
+		
+		opponentPlayer = new OpponentPanel(player);
+		opponentPlayer.setBackground(new Color(222,184,135));
+		contentPane.add(opponentPlayer, BorderLayout.NORTH);
+		
+		NotificationPanel notificationPanel = new NotificationPanel(player);
+		notificationPanel.txtNotification.setBackground(Color.LIGHT_GRAY);
+		notificationPanel.setBackground(new Color(222,184,135));
+		contentPane.add(notificationPanel, BorderLayout.WEST);
+		
+		setupGameBoardPanel();
+		
 		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
 		exec.scheduleAtFixedRate(new Runnable() {
 			@Override
 			public void run() {
-				player1Panel.setCards();
+				
+				playerPanel.setCards();
+				
 				NotificationPanel.txtNotification.setText("");
-
 				for (String string : player.getNotifications()) {
 					NotificationPanel.txtNotification.append(string + "\n");
 				}
+				NotificationPanel.txtNotification.setCaretPosition(NotificationPanel.txtNotification.getDocument().getLength());
+				
+				gameBoardPanel.setPlayedCard(player.getTableCard());
+				
+				opponentPlayer.setCards();	
 			}
-		}, 4000, 1500, TimeUnit.MILLISECONDS);
-
-//		PlayerPanel Player2Panel = new PlayerPanel(new Player(), myClient);
-//		contentPane.add(Player2Panel, BorderLayout.NORTH);
-		
-		setUpNotificationPanel();
-		setupGameBoardPanel();
-		
+		}, 7000, 1500, TimeUnit.MILLISECONDS);
 	}
 
-	private void setUpNotificationPanel() {
-		NotificationPanel NotificationPanel = new NotificationPanel(player);
-		contentPane.add(NotificationPanel, BorderLayout.EAST);
+	private void setUpContentPane() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(200, 100, 450, 300);
+		pack();
+		setSize(1045,847);
+		contentPane = new JPanel();
+		contentPane.setPreferredSize(new Dimension(850, 800));
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(new BorderLayout(0, 0));
 	}
 
 	private void setupGameBoardPanel() {
-		JPanel gameInfoPanel = new JPanel();
-		contentPane.add(gameInfoPanel, BorderLayout.CENTER);
-
-		TablePanel gamePlayPanel = new TablePanel(player);
-
-		gameInfoPanel.setLayout(new BorderLayout(0, 0));
-		gameInfoPanel.add(gamePlayPanel, BorderLayout.CENTER);
-
-		gamePlayPanel.setLayout(new BorderLayout(0, 0));
-
-		JPanel actionButtons = new JPanel();
-		gameInfoPanel.add(actionButtons);
-		actionButtons.setLayout(new BorderLayout(0, 0));
-
-		JPanel Buttons = new JPanel();
-		actionButtons.add(Buttons, BorderLayout.WEST);
-		Buttons.setLayout(new GridLayout(4, 0, 0, 0));
+		JPanel boardPanel = new JPanel();
+		boardPanel.setLayout(new BorderLayout(0, 0));
 		
-		JButton btnPlaycard = new JButton("PlayCard");
-		btnPlaycard.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String indexStr = JOptionPane.showInputDialog("please pick an index");
-				int index = Integer.parseInt(indexStr);	
-				
-				UNOCard myCard = player.getCard(index);
-				
-				JSONObject playCard = client.messageMan.playCardJson(myCard.getType(), myCard.getColorString());
-				System.out.println(playCard.toString());
-				client.sendAction(playCard);
-				player.cards.remove(player.getCard(index));
-			}
-		});
-		Buttons.add(btnPlaycard);
+		JPanel tablePlaceHolder = new JPanel();
+		tablePlaceHolder.setLayout(new BorderLayout(0, 0));
 		
-		JButton btnColorchange = new JButton("ColorChange");
-		btnColorchange.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String color = JOptionPane.showInputDialog("please pick a color in proper case (Red, Blue, Green, or Yellow)");
-				JSONObject changeColor = client.messageMan.changeColorJson(color);
-				System.out.println(changeColor.toString());
-				client.sendAction(changeColor);			
-			}
-		});
-		Buttons.add(btnColorchange);
-
-		TablePanel gameBoardPanel = new TablePanel(player);
-		actionButtons.add(gameBoardPanel, BorderLayout.CENTER);
-
-		GridBagConstraints gbc_btnClickForCards = new GridBagConstraints();
-		gbc_btnClickForCards.insets = new Insets(0, 0, 0, 5);
-		gbc_btnClickForCards.gridx = 0;
-		gbc_btnClickForCards.gridy = 2;
-
-		//continuously refreshes cards in users hands
-		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-		exec.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				gameBoardPanel.setPlayedCard(player.getTableCard());
-
-			}
-		}, 4000, 1500, TimeUnit.MILLISECONDS);
+		gameBoardPanel = new TablePanel();
+		
+		boardPanel.add(tablePlaceHolder, BorderLayout.CENTER);
+		contentPane.add(boardPanel, BorderLayout.CENTER);
+		
+		JPanel board = new JPanel();
+		board.setBackground(new Color(222,184,135));
+		boardPanel.add(board);
+		board.setLayout(new BorderLayout(0, 0));
+		board.add(gameBoardPanel, BorderLayout.CENTER);
 	}
-
 }

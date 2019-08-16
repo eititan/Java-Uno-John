@@ -122,7 +122,6 @@ public class ClientSocket implements Runnable {
 				parser.reshuffle(drilledJSON);
 				break;
 			case "your turn":
-				player.setIsTurn();
 				parser.yourTurn(drilledJSON);
 				break;
 			case "card count":

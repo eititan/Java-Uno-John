@@ -2,9 +2,6 @@ package Gui.Interfaces;
 
 import java.awt.Color;
 
-import Gui.Panel.InfoPanel;
-
-
 public interface GameConstants extends UNOConstants {
 	
 	Color[] UNO_COLORS = {RED, BLUE, GREEN, YELLOW};
@@ -15,6 +12,5 @@ public interface GameConstants extends UNOConstants {
 	String[] WildTypes = {W_COLORPICKER, W_DRAW4PLUS};
 
 	int MANUAL = 2;
-	
-	InfoPanel infoPanel = new InfoPanel();
+
 }

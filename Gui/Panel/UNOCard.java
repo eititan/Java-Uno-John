@@ -49,23 +49,21 @@ public class UNOCard extends JPanel implements CardInterface, UNOConstants {
 		g2.fillOval(0,cardHeight*1/4,cardWidth*3/5, cardHeight);
 		g2.setTransform(org);		
 		
-		//Value in the center		
-		Font defaultFont = new Font("Helvetica", Font.BOLD, cardWidth/2+5);		
+		Font defaultFont = new Font("Helvetica", Font.BOLD, 20);		
 		FontMetrics fm = this.getFontMetrics(defaultFont);
-		int StringWidth = fm.stringWidth(type)/2; //changed here
+		int StringWidth = fm.stringWidth(type)/2;
 		int FontHeight = defaultFont.getSize()*1/3;
 		g2.setColor(cardColor);
 		g2.setFont(defaultFont);
-		g2.drawString(type, cardWidth/2-StringWidth, cardHeight/2+FontHeight);	//here
+		g2.drawString(type, cardWidth/2-StringWidth, cardHeight/2+FontHeight);
 		
-		//Value in the corner
 		defaultFont = new Font("Helvetica", Font.ITALIC, cardWidth/5);		
 		fm = this.getFontMetrics(defaultFont);
-		StringWidth = fm.stringWidth(type)/2;	//HERE
+		StringWidth = fm.stringWidth(type)/2;
 		FontHeight = defaultFont.getSize()*1/3;
 		g2.setColor(Color.white);
 		g2.setFont(defaultFont);
-		g2.drawString(type, 2*margin,5*margin);			//AND HERE
+		g2.drawString(type, 2*margin,5*margin);
 	}	
 
 	class MouseHandler extends MouseAdapter {
