@@ -32,18 +32,20 @@ public class MessageParser {
     }
 
     public void playedCard(String message) {
-        String playedType = new JSONObject(message).getJSONObject("played card").getString("type");
-        String playedColor = new JSONObject(message).getJSONObject("played card").getString("color");
-        String playedUser = new JSONObject(message).getJSONObject("played card").getString("username");
+        if (player.isMyTurn()) {
+            String playedType = new JSONObject(message).getJSONObject("played card").getString("type");
+            String playedColor = new JSONObject(message).getJSONObject("played card").getString("color");
+            String playedUser = new JSONObject(message).getJSONObject("played card").getString("username");
 
-        Color color = determineColor(playedColor);
-        
-        player.endTurn();
-        player.removeCard();
-        
-        UNOCard playedCard = new UNOCard(color, playedType);
-        
-        player.addNotifications(playedUser + " has played " + playedCard.toString());
+            Color color = determineColor(playedColor);
+
+            player.endTurn();
+            player.removeCard();
+
+            UNOCard playedCard = new UNOCard(color, playedType);
+
+            player.addNotifications(playedUser + " has played " + playedCard.toString());
+        }
     }
 
     public void calledUno(String message) {
